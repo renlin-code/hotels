@@ -1,8 +1,12 @@
 @import "./reset";
 @import "./vars";
+@import "./fonts";
 
 body {
     margin: 56px 0;
+}
+body, button, input, textarea {
+    font-family: "PT Sans", sans-serif;
 }
 .container {
     width: 100%;

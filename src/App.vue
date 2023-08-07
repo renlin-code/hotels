@@ -47,10 +47,12 @@
           </div>
         </div>
         <div class="hotels-catalog__buttons buttons">
-          <SimpleButton primary @click.native="applyFilters">
+          <SimpleButton type="primary" size="lg" @click.native="applyFilters">
             Применить фильтр
           </SimpleButton>
-          <SimpleButton @click.native="reset"> Очистить фильтр </SimpleButton>
+          <SimpleButton type="secondary" size="lg" @click.native="reset"
+            ><CloseIcon /> Очистить фильтр
+          </SimpleButton>
         </div>
       </div>
       <div class="hotels-catalog__right">
@@ -59,10 +61,18 @@
             <HotelElement :injected-data="hotel" />
           </li>
         </ul>
+        <NoResults
+          class="hotels-catalog__no-results"
+          v-if="hotelsFiltered.length === 0"
+          @action-btn="reset"
+        />
         <Pagination
+          class="hotels-catalog__pagination"
           v-if="hotelsFiltered.length > itemsPerPage"
           @changePage="changePage"
+          :injected-page="currPage"
           :length="totalPages"
+          :resetTrigger="resetTrigger"
         />
       </div>
     </section>
@@ -79,6 +89,8 @@ import FilterRange from "@/components/Filters/FilterRange.vue";
 import HotelElement from "./components/HotelsCatalog/HotelElement.vue";
 import SimpleButton from "./components/Buttons/SimpleButton.vue";
 import Pagination from "./components/HotelsCatalog/Pagination.vue";
+import NoResults from "./components/HotelsCatalog/NoResults.vue";
+import CloseIcon from "./components/Icons/CloseIcon.vue";
 
 //Получение данных
 const hotels = ref(null);
@@ -92,6 +104,7 @@ const hotelsFiltered = ref(null);
 })();
 
 //Пагинация
+const currPage = ref(1);
 const totalPages = computed(() => Math.ceil(hotelsFiltered.value.length / itemsPerPage));
 const itemsPerPage = 3;
 const startIndex = ref(null);
@@ -100,8 +113,8 @@ const hotelsShown = computed(() =>
   hotelsFiltered.value.slice(startIndex.value, endIndex.value)
 );
 const changePage = (payload) => {
-  const currPage = payload;
-  startIndex.value = (currPage - 1) * itemsPerPage;
+  currPage.value = payload;
+  startIndex.value = (currPage.value - 1) * itemsPerPage;
   endIndex.value = startIndex.value + itemsPerPage;
 };
 
@@ -131,6 +144,7 @@ const selectedRange = ref([]);
 const setSelectedRange = (payload) => (selectedRange.value = payload);
 
 const applyFilters = () => {
+  changePage(1);
   hotelsFiltered.value = hotels.value
     .filter((hotel) =>
       selectedCountries.value ? selectedCountries.value.includes(hotel.country) : true
@@ -169,6 +183,9 @@ const reset = async () => {
   display: grid;
   grid-template-columns: 325px 1fr;
   gap: 40px;
+  &__pagination {
+    margin-top: 40px;
+  }
   .hotels {
     display: flex;
     flex-direction: column;
@@ -182,6 +199,8 @@ const reset = async () => {
     &__group {
       &-name {
         margin-bottom: 14px;
+        font-size: 16px;
+        font-weight: 700;
       }
     }
   }

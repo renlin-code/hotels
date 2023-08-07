@@ -4,7 +4,10 @@
       <div class="hotel-element__name">{{ props.injectedData.name }}</div>
       <div class="hotel-element__features">
         <div class="hotel-element__features-stars">
-          <StarIcon :active="index < props.injectedData.stars" v-for="(star, index) in 5" />
+          <StarIcon
+            :active="index < props.injectedData.stars"
+            v-for="(star, index) in 5"
+          />
         </div>
         <span class="hotel-element__features-type"> {{ props.injectedData.type }} </span>
         <div class="hotel-element__features-separator"></div>
@@ -16,20 +19,27 @@
           <span>{{ props.injectedData.country }}</span>
         </div>
       </div>
+      <p class="hotel-element__description">{{ props.injectedData.description }}</p>
     </div>
     <div class="hotel-element__right">
       <div class="hotel-element__price">
         <span class="hotel-element__price-number">{{ formattedPrice }}</span>
         <span class="hotel-element__price-label"> Цена за 1 ночь </span>
       </div>
+      <SimpleButton size="sm" :type="btnType" @click.native="bookHotel">
+        <OkIcon v-show="booked" /><ScheduleIcon v-show="!booked" /> {{ btnText }}
+      </SimpleButton>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import StarIcon from "@/components/Icons/StarIcon.vue";
 import LocationIcon from "@/components/Icons/LocationIcon.vue";
+import OkIcon from "@/components/Icons/OkIcon.vue";
+import ScheduleIcon from "@/components/Icons/ScheduleIcon.vue";
+import SimpleButton from "../Buttons/SimpleButton.vue";
 
 const props = defineProps({
   injectedData: {
@@ -48,6 +58,14 @@ const formattedPrice = computed(() => {
   });
   return formatter.format(props.injectedData.min_price);
 });
+
+const booked = ref(false);
+const btnType = computed(() => (booked.value ? "opaque-green" : "opaque-purple"));
+const btnText = computed(() => (booked.value ? "Забронировано" : "Забронировать"));
+
+const bookHotel = () => {
+  booked.value = !booked.value;
+};
 </script>
 
 <style scoped lang="scss">
@@ -65,10 +83,13 @@ const formattedPrice = computed(() => {
   &__name {
     color: $color_black;
     margin-bottom: 8px;
+    font-weight: 700;
+    font-size: 20px;
   }
   &__features {
     display: flex;
     align-items: center;
+    margin-bottom: 16px;
     &-stars {
       display: flex;
       align-items: center;
@@ -85,6 +106,32 @@ const formattedPrice = computed(() => {
       border-radius: 50%;
       background: $color_gray;
       margin: 0 6px;
+    }
+    &-reviews {
+      color: $color_dark-gray;
+    }
+    &-location {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-left: 15px;
+    }
+  }
+  &__right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  &__price {
+    display: flex;
+    flex-direction: column;
+    &-number {
+      text-align: end;
+      font-size: 25px;
+      font-weight: 700;
+    }
+    &-label {
+      text-align: end;
     }
   }
 }

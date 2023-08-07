@@ -11,10 +11,17 @@ const props = defineProps({
     type: Number,
     default: 1,
   },
+  injectedPage: {
+    type: Number,
+    default: 1,
+  }
 });
 const emits = defineEmits(["changePage"]);
 const page = ref(1);
+
+watch(() => props.injectedPage, (value) => page.value = value);
 watch(page, (value) => emits("changePage", value));
+
 </script>
 
 <style scoped lang="scss"></style>

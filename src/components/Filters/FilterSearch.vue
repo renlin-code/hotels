@@ -3,7 +3,8 @@
     <v-autocomplete
       clearable
       chips
-      label="Autocomplete"
+      label="Поиск стран"
+      no-data-text="К сожалению, по вашему запросу ничего не найдено :("
       :items="props.items"
       :multiple="props.items.length > 1"
       v-model="selectedItems"
