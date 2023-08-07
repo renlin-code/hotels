@@ -60,6 +60,8 @@ const formattedPrice = computed(() => {
 });
 
 const booked = ref(false);
+//Состояние booked(Забронировано) должен подтягиваться из бека, пока оно просто в самом компоненте хранится. Из-за этого может неправильно работать(его значение можеть распространяться в других экземплярах данного компонента)
+
 const btnType = computed(() => (booked.value ? "opaque-green" : "opaque-purple"));
 const btnText = computed(() => (booked.value ? "Забронировано" : "Забронировать"));
 
