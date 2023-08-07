@@ -8,6 +8,7 @@
       :multiple="props.items.length > 1"
       v-model="selectedItems"
       density="compact"
+      thumb-label="always"
     ></v-autocomplete>
   </div>
 </template>

@@ -55,10 +55,15 @@
       </div>
       <div class="hotels-catalog__right">
         <ul class="hotels-catalog__hotels hotels">
-          <li class="hotels__item" v-for="hotel in hotelsFiltered">
+          <li class="hotels__item" v-for="hotel in hotelsShown">
             <HotelElement :injected-data="hotel" />
           </li>
         </ul>
+        <Pagination
+          v-if="hotelsFiltered.length > itemsPerPage"
+          @changePage="changePage"
+          :length="totalPages"
+        />
       </div>
     </section>
   </main>
@@ -73,7 +78,9 @@ import FilterInput from "@/components/Filters/FilterInput.vue";
 import FilterRange from "@/components/Filters/FilterRange.vue";
 import HotelElement from "./components/HotelsCatalog/HotelElement.vue";
 import SimpleButton from "./components/Buttons/SimpleButton.vue";
+import Pagination from "./components/HotelsCatalog/Pagination.vue";
 
+//Получение данных
 const hotels = ref(null);
 const hotelsFiltered = ref(null);
 (async () => {
@@ -81,8 +88,24 @@ const hotelsFiltered = ref(null);
   const data = await res.json();
   hotels.value = data.hotels;
   hotelsFiltered.value = hotels.value;
+  changePage(1);
 })();
 
+//Пагинация
+const totalPages = computed(() => Math.ceil(hotelsFiltered.value.length / itemsPerPage));
+const itemsPerPage = 3;
+const startIndex = ref(null);
+const endIndex = ref(null);
+const hotelsShown = computed(() =>
+  hotelsFiltered.value.slice(startIndex.value, endIndex.value)
+);
+const changePage = (payload) => {
+  const currPage = payload;
+  startIndex.value = (currPage - 1) * itemsPerPage;
+  endIndex.value = startIndex.value + itemsPerPage;
+};
+
+//Фильтрация
 const allCountries = computed(() => [...new Set(hotels.value?.map((i) => i.country))]);
 const selectedCountries = ref(null);
 const setCountries = (payload) => (selectedCountries.value = payload);
